@@ -115,6 +115,8 @@ set(OS_MODULE_STDLIB_SOURCES
 add_library(${OS_MODULE_STDLIB_NAME} ${OS_MODULE_STDLIB_SOURCES})
 target_include_directories(${OS_MODULE_STDLIB_NAME} 
     PUBLIC src/stdlib/include
+    PUBLIC src/kernel/src/
+
 
 )
 target_link_libraries(${OS_MODULE_STDLIB_NAME} PUBLIC
@@ -189,7 +191,7 @@ target_include_directories(
         ${OS_MODULE_KERNEL_NAME} PUBLIC
         src/kernel/include
         src/stdlib/include
-        src/stdlib/src
+
 )
 # Defines which libraries to link against. Linking is where the compiler "glues" together libraries and code pieces.
 target_link_libraries(

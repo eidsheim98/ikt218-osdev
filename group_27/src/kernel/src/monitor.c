@@ -1,43 +1,56 @@
+// monitor.c -- Defines functions for writing to the monitor.
+//             heavily based on Bran's kernel development tutorials,
+//             but rewritten for JamesM's kernel tutorials.
+
+#include "monitor.h"
+#include "common.h"
+
+// The VGA framebuffer starts at 0xB8000.
+u16int *video_memory = (u16int *)0xB8000;
+// Stores the cursor position.
+u8int cursor_x = 0;
+u8int cursor_y = 0;
+
 // Updates the hardware cursor.
-static void move_cursor()
-{
-   // The screen is 80 characters wide...
-   u16int cursorLocation = cursor_y * 80 + cursor_x;
-   outb(0x3D4, 14);                  // Tell the VGA board we are setting the high cursor byte.
-   outb(0x3D5, cursorLocation >> 8); // Send the high cursor byte.
-   outb(0x3D4, 15);                  // Tell the VGA board we are setting the low cursor byte.
-   outb(0x3D5, cursorLocation);      // Send the low cursor byte.
-} 
+static void move_cursor()
+{   
+    // The screen is 80 characters wide...
+    u16int cursorLocation = cursor_y * 80 + cursor_x;
+    outb(0x3D4, 14);                  // Tell the VGA board we are setting the high cursor byte.
+    outb(0x3D5, cursorLocation >> 8); // Send the high cursor byte.
+    outb(0x3D4, 15);                  // Tell the VGA board we are setting the low cursor byte.
+    outb(0x3D5, cursorLocation);      // Send the low cursor byte.
+}
 
 // Scrolls the text on the screen up by one line.
-static void scroll()
+static void scroll()
 {
 
-   // Get a space character with the default colour attributes.
-   u8int attributeByte = (0 /*black*/ << 4) | (15 /*white*/ & 0x0F);
-   u16int blank = 0x20 /* space */ | (attributeByte << 8);
+    // Get a space character with the default colour attributes.
+    u8int attributeByte = (0 /*black*/ << 4) | (15 /*white*/ & 0x0F);
+    u16int blank = 0x20 /* space */ | (attributeByte << 8);
 
-   // Row 25 is the end, this means we need to scroll up
-   if(cursor_y >= 25)
-   {
-       // Move the current text chunk that makes up the screen
-       // back in the buffer by a line
-       int i;
-       for (i = 0*80; i < 24*80; i++)
-       {
-           video_memory[i] = video_memory[i+80];
-       }
+    // Row 25 is the end, this means we need to scroll up
+    if(cursor_y >= 25)
+    {
+        // Move the current text chunk that makes up the screen
+        // back in the buffer by a line
+        int i;
+        for (i = 0*80; i < 24*80; i++)
+        {
+            video_memory[i] = video_memory[i+80];
+        }
 
-       // The last line should now be blank. Do this by writing
-       // 80 spaces to it.
-       for (i = 24*80; i < 25*80; i++)
-       {
-           video_memory[i] = blank;
-       }
-       // The cursor should now be on the last line.
-       cursor_y = 24;
-   }
-} 
+        // The last line should now be blank. Do this by writing
+        // 80 spaces to it.
+        for (i = 24*80; i < 25*80; i++)
+        {
+            video_memory[i] = blank;
+        }
+        // The cursor should now be on the last line.
+        cursor_y = 24;
+    }
+}
 
 // Writes a single character out to the screen.
 void monitor_put(char c)

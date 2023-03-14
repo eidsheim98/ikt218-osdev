@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <time.h>
 #include <stdio.h>
-#include "monitor.h"
-
 
     int isalnum(int c);
     int iscntrl(int c);

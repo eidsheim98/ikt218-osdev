@@ -1,5 +1,6 @@
 
 #include "system.h"
+#include "monitor.h"
 
 // Define entry point in asm to prevent C++ mangling
 extern "C"{
