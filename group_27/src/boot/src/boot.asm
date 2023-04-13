@@ -31,6 +31,7 @@ _start:
     call init_gdt                       ; Set up the GDT
     extern init_idt
     call init_idt
+    sti
     extern kernel_main          ; Set the kernel_main entry point
     call kernel_main            ; Call the kernel_main function
     cli                         ; Disable interrupts (CLear Interrupt bit)

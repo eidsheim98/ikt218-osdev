@@ -1,10 +1,8 @@
-//
-// isr.h -- Interface and structures for high level interrupt service routines.
-// Part of this code is modified from Bran's kernel development tutorials.
-// Rewritten for JamesM's kernel development tutorials.
-//
 
-// Define the Interrupt Request numbers
+extern "C" {
+  extern void init_irq();
+}
+
 #define IRQ0 32
 #define IRQ1 33
 #define IRQ2 34
@@ -34,5 +32,6 @@ typedef void (*isr_t)(registers_t*, void*);
 
 // Register the interrupt handlers
 void register_interrupt_handler(u8int n, isr_t handler);
-
 void register_irq_handler(int irq, isr_t handler, void* ctx);
+
+void init_irq();

@@ -8,8 +8,8 @@
 #include "printing.h"
 
 extern "C" {
-    void isr_handler(registers_t);
-    void irq_handler(registers_t regs);
+    void isr_handler(registers_t) asm ("isr_handler");
+    void irq_handler(registers_t regs) asm ("irq_handler");
 }
 
 // Keep track of registered interrupt handlers
@@ -19,9 +19,10 @@ struct interrupt_handler_t {
   void *data;
 };
 
-// Create an array of interrupt handlers
+// ############################ ISR ############################
+
+//Array of interrupts handlers
 interrupt_handler_t interrupt_handlers[256];
-interrupt_handler_t irq_handlers[16];
 
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
@@ -38,15 +39,20 @@ void isr_handler(registers_t regs)
     }
     else
     {
-        /*monitor_write("unhandled interrupt: ");
-        monitor_write_hex(int_no);
-        monitor_put('\n');*/
         for(;;);
     }
 }
+// Register ISR
+void register_interrupt_handler(uint8_t n, isr_t handler, void* context)
+{
+    interrupt_handlers[n].handler = handler;
+    interrupt_handlers[n].data = context;
+}
 
-// Disable interrupts temporarily
-asm volatile("sti");
+// ############################ IRQ ############################
+
+// Array of IRQ handlers
+interrupt_handler_t irq_handlers[16];
 
 // Gets called from the ASM interrupt handler in interrupt.asm
 void irq_handler(registers_t regs)
@@ -67,16 +73,16 @@ void irq_handler(registers_t regs)
         intrpt.handler(&regs, intrpt.data);
     }
 } 
-
-
-void register_interrupt_handler(uint8_t n, isr_t handler, void* context)
-{
-    interrupt_handlers[n].handler = handler;
-    interrupt_handlers[n].data = context;
-}
-
 // Register an IRQ handler
 void register_irq_handler(int irq, isr_t handler, void* ctx) {
   irq_handlers[irq].handler = handler;
   irq_handlers[irq].data = ctx;
+}
+
+void init_irq() {
+  for (int i = 0; i < 255; i++) {
+    irq_handlers[i].data = NULL;
+    irq_handlers[i].handler = NULL;
+    irq_handlers[i].num = i;
+  }
 }
