@@ -12,7 +12,6 @@ extern "C"{
  
 // Code from https://wiki.osdev.org/Bare_Bones#Writing_a_kernel_in_C
 
-int i = 0;
  
 void kernel_main(void) 
 {
@@ -31,7 +30,6 @@ void kernel_main(void)
         asm volatile("cli");
     }, NULL);
 
-	asm volatile ("int $0x21");
 
 
     // Print a message and enter an infinite loop to wait for interrupts

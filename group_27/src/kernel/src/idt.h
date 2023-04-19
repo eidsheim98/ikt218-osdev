@@ -1,5 +1,4 @@
 #include "common.h"
-
 //
 // IDT.h
 // Contains code for initializing the interrupt descriptor table
@@ -32,79 +31,134 @@ typedef struct idt_ptr_struct idt_ptr_t;
 
 // Makes it possible to access all interrupt service routines
 // They are located inside interrupt.asm
-extern "C" {
-    extern void isr0 ();
-    extern void isr1 ();
-    extern void isr2 ();
-    extern void isr3 ();
-    extern void isr4 ();
-    extern void isr5 ();
-    extern void isr6 ();
-    extern void isr7 ();
-    extern void isr8 ();
-    extern void isr9 ();
-    extern void isr10 ();
-    extern void isr11 ();
-    extern void isr12 ();
-    extern void isr13 ();
-    extern void isr14 ();
-    extern void isr15 ();
-    extern void isr16 ();
-    extern void isr17 ();
-    extern void isr18 ();
-    extern void isr19 ();
-    extern void isr20 ();
-    extern void isr21 ();
-    extern void isr22 ();
-    extern void isr23 ();
-    extern void isr24 ();
-    extern void isr25 ();
-    extern void isr26 ();
-    extern void isr27 ();
-    extern void isr28 ();
-    extern void isr29 ();
-    extern void isr30 ();
-    extern void isr31 (); 
-    extern void irq0 (); 
-    extern void irq1 (); 
-    extern void irq2 (); 
-    extern void irq3 (); 
-    extern void irq4 (); 
-    extern void irq5 (); 
-    extern void irq6 (); 
-    extern void irq7 (); 
-    extern void irq8 (); 
-    extern void irq9 (); 
-    extern void irq10 (); 
-    extern void irq11 (); 
-    extern void irq12 (); 
-    extern void irq13 (); 
-    extern void irq14 (); 
-    extern void irq15 (); 
+#define ISR 1
+#define ISR2 2
+#define ISR3 3
+#define ISR4 4
+#define ISR5 5
+#define ISR6 6
+#define ISR7 7
+#define ISR8 8
+#define ISR9 9
+#define ISR10 10
+#define ISR11 11
+#define ISR12 12
+#define ISR13 13
+#define ISR14 14
+#define ISR15 15
+#define ISR16 16
+#define ISR17 17
+#define ISR18 18
+#define ISR19 19
+#define ISR20 20
+#define ISR21 21
+#define ISR22 22
+#define ISR23 23
+#define ISR24 24
+#define ISR25 25
+#define ISR26 26
+#define ISR27 27
+#define ISR28 28
+#define ISR29 29
+#define ISR30 30
+#define ISR31 31
+#define IRQ0 32
+#define IRQ1 33
+#define IRQ2 34
+#define IRQ3 35
+#define IRQ4 36
+#define IRQ5 37
+#define IRQ6 38
+#define IRQ7 39
+#define IRQ8 40
+#define IRQ9 41
+#define IRQ10 42
+#define IRQ11 43
+#define IRQ12 44
+#define IRQ13 45
+#define IRQ14 46
+#define IRQ15 47
+#define IRQ_COUNT 16
+extern "C"{
+
+extern void isr0 ();
+extern void isr1 ();
+extern void isr2 ();
+extern void isr3 ();
+extern void isr4 ();
+extern void isr5 ();
+extern void isr6 ();
+extern void isr7 ();
+extern void isr8 ();
+extern void isr9 ();
+extern void isr10();
+extern void isr11();
+extern void isr12();
+extern void isr13();
+extern void isr14();
+extern void isr15();
+extern void isr16();
+extern void isr17();
+extern void isr18();
+extern void isr19();
+extern void isr20();
+extern void isr21();
+extern void isr22();
+extern void isr23();
+extern void isr24();
+extern void isr25();
+extern void isr26();
+extern void isr27();
+extern void isr28();
+extern void isr29();
+extern void isr30();
+extern void isr31();
+extern void irq0 ();
+extern void irq1 ();
+extern void irq2 ();
+extern void irq3 ();
+extern void irq4 ();
+extern void irq5 ();
+extern void irq6 ();
+extern void irq7 ();
+extern void irq8 ();
+extern void irq9 ();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
 }
 
-extern void idt_flush(u32int);
-static void idt_set_gate(u8int,u32int,u16int,u8int);
+
 
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;
 
-// Sets the values of an IDT entry
-static void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags)
+void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags)
 {
-   idt_entries[num].base_lo = base & 0xFFFF;
-   idt_entries[num].base_hi = (base >> 16) & 0xFFFF;
-
-   idt_entries[num].sel     = sel;
-   idt_entries[num].always0 = 0;
-   // The OR below sets the gate's privilege level to 3
-   // and must be uncommented if entering user mode
-   idt_entries[num].flags   = flags /* | 0x60 */;
-} 
+    idt_entries[num].base_lo = base & 0xFFFF;
+    idt_entries[num].base_hi = (base >> 16) & 0xFFFF;
+    idt_entries[num].sel     = sel;
+    idt_entries[num].always0 = 0;
+    idt_entries[num].flags   = flags  | 0x60;
+}
 
 // Set the values of all IDT entries
-void set_gates() 
+void init_interrupts() 
 {
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+    outb(0x21, 0x20);
+    outb(0xA1, 0x28);
+    outb(0x21, 0x04);
+    outb(0xA1, 0x02);
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0);
+
     idt_set_gate( 0, (u32int)isr0 , 0x08, 0x8E);
     idt_set_gate( 1, (u32int)isr1 , 0x08, 0x8E);
     idt_set_gate( 2, (u32int)isr2, 0x08, 0x8E);
@@ -156,31 +210,15 @@ void set_gates()
     idt_set_gate(47, (u32int)irq15, 0x08, 0x8E);
 }
 
-// Remap the IRQ table to correspond to slave PIC
-static void remap_irq_table() {
-    outb(0x20, 0x11);
-    outb(0xA0, 0x11);
-    outb(0x21, 0x20);
-    outb(0xA1, 0x28);
-    outb(0x21, 0x04);
-    outb(0xA1, 0x02);
-    outb(0x21, 0x01);
-    outb(0xA1, 0x01);
-    outb(0x21, 0x0);
-    outb(0xA1, 0x0);
-}
-
 // Initializes the IDT
 void init_idt()
 {
     idt_ptr.limit = sizeof(idt_entry_t) * 256 -1;
     idt_ptr.base  = (u32int)&idt_entries;
 
-    memset(&idt_entries, 0, sizeof(idt_entry_t)*256);
-   
-    // These two are created as seperate functions to avoid overcrowding here
-    remap_irq_table();
-    set_gates();
+    init_interrupts();
+   //memset(&idt_entries, 0, sizeof(idt_entry_t)*256);
+   // These two are created as seperate functions to avoid overcrowding here
 
     idt_flush((u32int)&idt_ptr);
 }
