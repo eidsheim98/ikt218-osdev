@@ -3,19 +3,39 @@
 #include "common.h"
 #include "keyboard.h"
 #include "printing.h"
-#include <cstdlib>
+#include "system.h"
 extern uint32_t end; // This is defined in linker.ld
 
 
 // Define entry point in asm to prevent C++ mangling
 extern "C"{
-    #include <libc/system.h>
+    #include "system.h"
     void kernel_main();
+}
+
+// Create the "new" operator
+void* operator new(std::size_t size) {
+    return malloc(size); // Allocate memory for the new object using malloc()
+}
+// Create the "new" operator for arrays
+void* operator new[](std::size_t size) {
+    return malloc(size); // Allocate memory for the new object using malloc()
+}
+// Create the "delete" operator
+void operator delete(void* ptr) noexcept {
+    free(ptr); // Deallocate memory by calling free()
+}
+// Create the "delete" operator for arrays
+void operator delete[](void* ptr) noexcept {
+    free(ptr); // Allocate memory for the new object using malloc()
 }
 
 void kernel_main()
 {
-    // Initialize Global Descriptor Table (GDT)
+    // Initialize kernel memory
+    init_kernel_memory(&end);
+
+    // Initialize Global Descriptor Table (GDT)5
     init_gdt();
 
     // Initialize Interrupt Descriptor Table (IDT)

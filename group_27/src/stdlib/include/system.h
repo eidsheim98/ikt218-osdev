@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <stdio.h>
+#include "memory.h"
 
 
     int isalnum(int c);

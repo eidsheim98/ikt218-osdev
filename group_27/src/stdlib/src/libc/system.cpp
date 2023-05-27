@@ -14,3 +14,11 @@ int strcmp(const char *p1, const char *p2) {
   while (c1 == c2);
   return c1 - c2; 
 }
+
+void *malloc(size_t size) {
+
+}
+
+void free(void *ptr) {
+  
+}

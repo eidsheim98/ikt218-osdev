@@ -19,6 +19,8 @@ char getBuffer() {
 }
 
 char resetBuffer() {
+    bufLen = 0;
+    mymemset(buffer, 0, 80);
 }
 
 void runCommand() {
@@ -26,7 +28,24 @@ void runCommand() {
         // This will only run once because the buffer is never reset because of memory stuff
         print("\nYay!");
     }
-    else {
-        print("\nCommand not found");
+    else if (strcmp(buffer, "help") == 0) {
+        // This will only run once because the buffer is never reset because of memory stuff
+        print("\ntest");
+        print("\npepsi");
+        print("\nakira");
     }
+    else if (strcmp(buffer, "pepsi") == 0) {
+        // This will only run once because the buffer is never reset because of memory stuff
+        print("\ner kul");
+    }
+    else if (strcmp(buffer, "akira") == 0) {
+        // This will only run once because the buffer is never reset because of memory stuff
+        print("\ner søt");
+    }
+    else {
+        print("\nCommand not found: ");
+        print("\n");
+        print(buffer);
+    }
+    resetBuffer();
 }
