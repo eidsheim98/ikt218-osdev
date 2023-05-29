@@ -122,6 +122,7 @@ set(OS_MODULE_STDLIB_SOURCES
         src/stdlib/src/libc/string.cpp
         src/stdlib/src/libc/stdio.cpp
         src/stdlib/src/libc/system.cpp
+        
 
 )
 add_library(${OS_MODULE_STDLIB_NAME} ${OS_MODULE_STDLIB_SOURCES})
@@ -166,6 +167,20 @@ target_include_directories(${OS_MODULE_BOOT_NAME} PUBLIC
 # Defines the linking between boot and the boot library
 target_link_libraries(${OS_MODULE_BOOT_NAME} PRIVATE ${OS_MODULE_KERNEL_NAME} ${OS_LIBRARIES})
 set(OS_LIBRARIES ${OS_LIBRARIES} ${OS_MODULE_BOOT_NAME})
+
+########################################
+###
+### OS Module: Applications
+# The operating system kernel
+# 1. Load all kernel applications here
+########################################
+# Define kernel headers target
+add_library(kernel-headers INTERFACE)
+target_include_directories(kernel-headers INTERFACE src/kernel/include)
+
+# Load the song application target
+add_subdirectory(src/apps/song)
+set(OS_APPLICATIONS ${OS_APPLICATIONS} UiAOS-song)
 
 ########################################
 ###
