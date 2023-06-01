@@ -65,7 +65,8 @@ void kernel_main()
     void* memory2 = malloc(54321); 
     void* memory3 = malloc(13331);
     char* memory4 = new char[1000]();
-
+    printf("\n");
+    print_memory_layout();
     // Create interrupt handlers for interrupt 3 and 4
     register_interrupt_handler(3,[](registers_t* regs, void* context){
         printf("Interrupt 3 - OK\n");
